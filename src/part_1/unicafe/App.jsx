@@ -7,7 +7,14 @@ const Header = () => <h1>give feedback</h1>;
 const Button = ({text, command}) => <button onClick={command}>{text}</button>;
 
 
-const StatisticLine = ({text, value}) => <div>{text} {value}</div>
+const StatisticLine = ({text, value}) => {
+    return (
+        <tr>
+            <td>{text}</td>
+            <td>{value}</td>
+        </tr>
+    );
+}
 
 const Statistics = ({goodCount, neutralCount, badCount}) => {
     function total() {
@@ -17,15 +24,17 @@ const Statistics = ({goodCount, neutralCount, badCount}) => {
     const positive = () => goodCount / total() * 100;
 
     let data =
-        <>
-            <StatisticLine text='good' value={goodCount}/>
-            <StatisticLine text='neutral' value={neutralCount}/>
-            <StatisticLine text='bad' value={badCount}/>
+        <table>
+            <tbody>
+                <StatisticLine text='good' value={goodCount}/>
+                <StatisticLine text='neutral' value={neutralCount}/>
+                <StatisticLine text='bad' value={badCount}/>
 
-            <StatisticLine text='all' value={total()}/>
-            <StatisticLine text='average' value={average()}/>
-            <StatisticLine text='positive' value={positive() + '%'}/>
-        </>;
+                <StatisticLine text='all' value={total()}/>
+                <StatisticLine text='average' value={average()}/>
+                <StatisticLine text='positive' value={positive() + '%'}/>
+            </tbody>
+        </table>;
     return (
         <>
             <h1>statistics</h1>
