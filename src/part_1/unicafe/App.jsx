@@ -9,11 +9,10 @@ const Statistics = ({goodCount, neutralCount, badCount}) => {
         return goodCount + neutralCount + badCount;
     }
     const average = () => (goodCount - badCount) / total();
-    const positive = () => goodCount / total();
+    const positive = () => goodCount / total() * 100;
 
-    return (
+    let data =
         <>
-            <h1>statistics</h1>
             <div>good {goodCount}</div>
             <div>neutral {neutralCount}</div>
             <div>bad {badCount}</div>
@@ -21,6 +20,11 @@ const Statistics = ({goodCount, neutralCount, badCount}) => {
             <div>all {total()}</div>
             <div>average {average()}</div>
             <div>positive {positive()} %</div>
+        </>;
+    return (
+        <>
+            <h1>statistics</h1>
+            {total() ? data : <div>No feedback give</div>}
         </>
     );
 }
