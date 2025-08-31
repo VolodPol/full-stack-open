@@ -1,10 +1,12 @@
-import {useState} from 'react'
+import { useState } from 'react'
+import highestRating from "./utils.js";
 
 const Button = ({text, command}) => <button onClick={command}>{text}</button>;
 
-const CurrentAnecdote = ({anecdote, vote}) => {
+const AnecdoteSection = ({text, anecdote, vote}) => {
     return (
         <>
+            <h1>{text}</h1>
             <div>{anecdote}</div>
             <div>has {vote} {vote === 1 ? 'vote' : 'votes'}</div>
         </>
@@ -22,7 +24,6 @@ const App = () => {
         'Programming without an extremely heavy use of console.log is same as if a doctor would refuse to use x-rays or blood tests when diagnosing patients.',
         'The only way to go fast, is to go well.'
     ]
-
     const [selected, setSelected] = useState(0)
     const [votes, setVotes] = useState(Array.from({ length: anecdotes.length }, () => 0))
 
@@ -36,11 +37,13 @@ const App = () => {
         setVotes(updated);
     }
 
+    const best = highestRating(votes);
     return (
         <div>
-            <CurrentAnecdote anecdote={anecdotes[selected]} vote={votes[selected]}/>
+            <AnecdoteSection text={'Anecdote of the day'} anecdote={anecdotes[selected]} vote={votes[selected]}/>
             <Button text={'vote'} command={() => upVote()}/>
             <Button text={'next anecdote'} command={() => setSelected(randomAnecdote())}/>
+            <AnecdoteSection text={'Anecdote with most votes'} anecdote={anecdotes[best]} vote={votes[best]}/>
         </div>
     )
 }
