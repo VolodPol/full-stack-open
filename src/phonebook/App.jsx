@@ -14,7 +14,7 @@ const App = () => {
         personService.getAll()
             .then(data => {
                 setPersons(data);
-            })
+            });
     }, []);
 
     const updateNewName = (event) => {
@@ -31,13 +31,24 @@ const App = () => {
 
     const submitPerson = (event) => {
         event.preventDefault();
-        function refresh() {//why const behaves in a weird way?
+        function refresh() {
             setNewName('');
             setNewNumber('');
         }
 
-        if (persons.find(p => p.name === newName)) {
-            alert(`${newName} is already added to phonebook`);
+        const found = persons.findIndex(p => p.name === newName);
+        if (found !== -1) {
+            if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
+                personService.updatePerson(
+                    {
+                        name: newName,
+                        number: newNumber,
+                        id: persons[found].id
+                    }
+                ).then(updated => {
+                    setPersons(persons.map(p => p.id === updated.id ? updated : p));
+                });
+            }
             refresh();
             return;
         }

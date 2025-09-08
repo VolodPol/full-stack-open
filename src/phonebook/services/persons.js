@@ -21,7 +21,7 @@ const removePerson = (id) => {
 };
 
 const updatePerson = (updatePerson) => {
-    const id = { updatePerson };
+    const { id } = updatePerson;
     return axios
         .put(`${url}/${id}`, updatePerson)
         .then(response => response.data);
