@@ -1,11 +1,11 @@
 import {Person} from "./Person.jsx";
 
-const People = ( {persons} ) => {
+const People = ( {persons, deletePerson} ) => {
     return (
         <>
             {
                 persons.map(p =>
-                    <Person key={p.id} person={p}/>
+                    <Person key={p.name} person={p} onClick={deletePerson}/>
                 )
             }
         </>

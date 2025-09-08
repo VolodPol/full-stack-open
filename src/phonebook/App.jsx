@@ -2,20 +2,18 @@ import {useEffect, useState} from 'react'
 import {SearchBar} from "./components/SearchBar.jsx";
 import PersonForm from "./components/PersonForm.jsx";
 import People from "./components/People.jsx";
-import axios from "axios";
+import personService from "./services/persons.js";
 
 const App = () => {
-    const [id, setId] = useState(1);
     const [persons, setPersons] = useState([]);
     const [newName, setNewName] = useState('');
     const [newNumber, setNewNumber] = useState('');
     const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
-        axios
-            .get('http://localhost:3001/persons')
-            .then(response => {
-                setPersons(response.data);
+        personService.getAll()
+            .then(data => {
+                setPersons(data);
             })
     }, []);
 
@@ -44,12 +42,21 @@ const App = () => {
             return;
         }
 
-        let newId = id + 1;
-        setId(newId);
-        let person = { name: newName, number: newNumber, id: newId };
-        setPersons(persons.concat(person));
-        refresh();
+        let person = { name: newName, number: newNumber };
+        personService.createPerson(person)
+            .then(newPerson => {
+                setPersons(persons.concat(newPerson));
+                refresh();
+            });
     }
+
+    const deletePerson = (id) => {
+        let toDelete = persons.findIndex(p => p.id === id);
+        if (window.confirm(`Delete ${persons[toDelete].name}`)) {
+            personService.removePerson(id);
+            setPersons(persons.toSpliced(toDelete));
+        }
+    };
 
     function filteredPersons() {
         return persons.filter(p => p.name.toLowerCase().includes(searchQuery.toLowerCase()));
@@ -64,7 +71,7 @@ const App = () => {
             <PersonForm newName={newName} newNumber={newNumber} onNameChange={updateNewName} onNumberChange={updateNewNumber} onSubmit={submitPerson}/>
 
             <h2>Numbers</h2>
-            <People persons={filteredPersons()}/>
+            <People persons={filteredPersons()} deletePerson={deletePerson}/>
         </div>
     )
 }
