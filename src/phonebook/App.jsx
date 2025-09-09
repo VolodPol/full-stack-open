@@ -3,12 +3,16 @@ import {SearchBar} from "./components/SearchBar.jsx";
 import PersonForm from "./components/PersonForm.jsx";
 import People from "./components/People.jsx";
 import personService from "./services/persons.js";
+import "./index.css";
+import Notification from "./components/Notification.jsx";
+
 
 const App = () => {
     const [persons, setPersons] = useState([]);
     const [newName, setNewName] = useState('');
     const [newNumber, setNewNumber] = useState('');
     const [searchQuery, setSearchQuery] = useState('');
+    const [notification, setNotification] = useState(null);
 
     useEffect(() => {
         personService.getAll()
@@ -29,6 +33,14 @@ const App = () => {
         setSearchQuery(event.target.value);
     }
 
+    const successNotification = ( isExisting, name ) => {
+        isExisting ? setNotification(`Updated ${name}`) : setNotification(`Added ${name}`);
+        setTimeout(
+            () => setNotification(null),
+            3000
+        );
+    }
+
     const submitPerson = (event) => {
         event.preventDefault();
         function refresh() {
@@ -47,6 +59,7 @@ const App = () => {
                     }
                 ).then(updated => {
                     setPersons(persons.map(p => p.id === updated.id ? updated : p));
+                    successNotification(true, updated.name);
                 });
             }
             refresh();
@@ -57,6 +70,7 @@ const App = () => {
         personService.createPerson(person)
             .then(newPerson => {
                 setPersons(persons.concat(newPerson));
+                successNotification(false, newName);
                 refresh();
             });
     }
@@ -76,6 +90,7 @@ const App = () => {
     return (
         <div>
             <h2>Phonebook</h2>
+            <Notification message={notification}/>
             <SearchBar value={searchQuery} onChange={updateQuery}/>
             <h2>Add a new</h2>
 
