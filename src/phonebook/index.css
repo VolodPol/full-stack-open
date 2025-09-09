@@ -1,9 +1,16 @@
-.added {
-    color: green;
+.message {
     background: lightgrey;
     font-size: 20px;
     border-style: solid;
     border-radius: 5px;
     padding: 10px;
     margin-bottom: 10px;
+}
+
+.message.added {
+    color: green;
+}
+
+.message.error {
+    color: red;
 }

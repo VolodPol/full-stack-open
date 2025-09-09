@@ -14,12 +14,20 @@ const App = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [notification, setNotification] = useState(null);
 
-    useEffect(() => {
+    const resetNotification = () => {
+        setTimeout(
+            () => setNotification(null),
+            3000
+        );
+    };
+
+    const fetchPersons = () =>
         personService.getAll()
             .then(data => {
                 setPersons(data);
             });
-    }, []);
+
+    useEffect(() => fetchPersons(), []);
 
     const updateNewName = (event) => {
         setNewName(event.target.value);
@@ -33,12 +41,22 @@ const App = () => {
         setSearchQuery(event.target.value);
     }
 
-    const successNotification = ( isExisting, name ) => {
-        isExisting ? setNotification(`Updated ${name}`) : setNotification(`Added ${name}`);
-        setTimeout(
-            () => setNotification(null),
-            3000
-        );
+    const notifySuccess = ( isExisting, name ) => {
+        const newNotification = {
+            message: isExisting ? `Updated ${name}` : `Added ${name}`,
+            isSuccess: true
+        };
+        setNotification(newNotification)
+        resetNotification();
+    }
+
+    const notifyMissing = ( name ) => {
+        const newNotification = {
+            message: `Information of ${name} has already been removed from server`,
+            isSuccess: false
+        };
+        setNotification(newNotification);
+        resetNotification();
     }
 
     const submitPerson = (event) => {
@@ -59,7 +77,12 @@ const App = () => {
                     }
                 ).then(updated => {
                     setPersons(persons.map(p => p.id === updated.id ? updated : p));
-                    successNotification(true, updated.name);
+                    notifySuccess(true, updated.name);
+                }).catch(error => {
+                    if (error.response.status === 404) {
+                        notifyMissing(newName);
+                        fetchPersons();
+                    }
                 });
             }
             refresh();
@@ -70,7 +93,7 @@ const App = () => {
         personService.createPerson(person)
             .then(newPerson => {
                 setPersons(persons.concat(newPerson));
-                successNotification(false, newName);
+                notifySuccess(false, newName);
                 refresh();
             });
     }
@@ -90,7 +113,7 @@ const App = () => {
     return (
         <div>
             <h2>Phonebook</h2>
-            <Notification message={notification}/>
+            <Notification notification={notification}/>
             <SearchBar value={searchQuery} onChange={updateQuery}/>
             <h2>Add a new</h2>
 
