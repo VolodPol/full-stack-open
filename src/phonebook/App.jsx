@@ -27,7 +27,7 @@ const App = () => {
                 setPersons(data);
             });
 
-    useEffect(() => fetchPersons(), []);
+    useEffect(() => { fetchPersons() }, []);
 
     const updateNewName = (event) => {
         setNewName(event.target.value);
@@ -102,7 +102,7 @@ const App = () => {
         let toDelete = persons.findIndex(p => p.id === id);
         if (window.confirm(`Delete ${persons[toDelete].name}`)) {
             personService.removePerson(id);
-            setPersons(persons.toSpliced(toDelete));
+            setPersons(persons.toSpliced(toDelete, 1));
         }
     };
 
