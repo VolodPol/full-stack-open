@@ -6,7 +6,6 @@ const Notification = ({ notification }) => {
     let className = 'message';
     notification.isSuccess ? className += ' added' : className += ' error';
 
-    console.log(className);
     return (
         <div className={className}>
             {notification.message}
