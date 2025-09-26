@@ -14,10 +14,10 @@ const App = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [notification, setNotification] = useState(null);
 
-    const resetNotification = () => {
+    const resetNotification = (seconds) => {
         setTimeout(
             () => setNotification(null),
-            3000
+            seconds ? seconds * 1000 : 3000
         );
     };
 
@@ -27,7 +27,7 @@ const App = () => {
                 setPersons(data);
             });
 
-    useEffect(() => fetchPersons(), []);
+    useEffect(() => { fetchPersons() }, []);
 
     const updateNewName = (event) => {
         setNewName(event.target.value);
@@ -82,6 +82,12 @@ const App = () => {
                     if (error.response.status === 404) {
                         notifyMissing(newName);
                         fetchPersons();
+                    } else if (error.response.status === 400) {
+                        setNotification({
+                            message: error.response.data.error,
+                            isSuccess: false
+                        });
+                        resetNotification(5);
                     }
                 });
             }
@@ -95,6 +101,12 @@ const App = () => {
                 setPersons(persons.concat(newPerson));
                 notifySuccess(false, newName);
                 refresh();
+            }).catch(error => {
+                setNotification({
+                    message: error.response.data.error,
+                    isSuccess: false
+                });
+                resetNotification(10);
             });
     }
 
@@ -102,7 +114,7 @@ const App = () => {
         let toDelete = persons.findIndex(p => p.id === id);
         if (window.confirm(`Delete ${persons[toDelete].name}`)) {
             personService.removePerson(id);
-            setPersons(persons.toSpliced(toDelete));
+            setPersons(persons.toSpliced(toDelete, 1));
         }
     };
 
